@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shuffle, Sliders, Hash, CheckCircle2, RotateCw, ArrowLeft, Settings } from 'lucide-react';
+import { Shuffle, Sliders, Hash, CheckCircle2, RotateCw, ArrowLeft, Settings, Info } from 'lucide-react';
 import type { OriginalExam, MixConfig, ExamMetadata } from '../types/exam';
 
 interface StepConfigProps {
@@ -19,6 +19,7 @@ export const StepConfig: React.FC<StepConfigProps> = ({
   const [shuffleQuestions, setShuffleQuestions] = useState<boolean>(true);
   const [shuffleOptions, setShuffleOptions] = useState<boolean>(true);
   const [seed, setSeed] = useState<number>(() => Math.floor(Math.random() * 100000));
+  const [showSeedTooltip, setShowSeedTooltip] = useState<boolean>(false);
 
   // Metadata customization
   const [metadata, setMetadata] = useState<ExamMetadata>(originalExam.metadata);
@@ -195,21 +196,71 @@ export const StepConfig: React.FC<StepConfigProps> = ({
             </div>
 
             {/* Seed setting */}
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2 text-slate-600">
-                <span>Mã hạt giống (Seed):</span>
-                <span className="font-mono font-bold bg-slate-100 px-2 py-0.5 rounded text-slate-800">
-                  {seed}
+            <div className="pt-3 border-t border-slate-100 space-y-2.5">
+              <div className="flex items-center gap-1.5 relative">
+                <span className="text-xs font-semibold text-slate-800">
+                  Mã hạt giống (Seed)
                 </span>
+                <button
+                  type="button"
+                  onClick={() => setShowSeedTooltip(!showSeedTooltip)}
+                  onMouseEnter={() => setShowSeedTooltip(true)}
+                  onMouseLeave={() => setShowSeedTooltip(false)}
+                  className="text-slate-400 hover:text-blue-600 transition-colors p-0.5 rounded-full hover:bg-slate-100 focus:outline-hidden"
+                  aria-label="Thông tin về mã hạt giống"
+                >
+                  <Info className="w-3.5 h-3.5" />
+                </button>
+
+                {/* Tooltip Popover */}
+                {showSeedTooltip && (
+                  <div
+                    className="absolute bottom-full left-0 mb-2 w-72 sm:w-80 p-3 bg-slate-900 text-slate-100 text-xs rounded-xl shadow-xl z-30 leading-relaxed border border-slate-800"
+                    onMouseEnter={() => setShowSeedTooltip(true)}
+                    onMouseLeave={() => setShowSeedTooltip(false)}
+                  >
+                    <div className="font-semibold text-white mb-1 flex items-center gap-1.5">
+                      <Info className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                      <span>Mã hạt giống (Seed) là gì?</span>
+                    </div>
+                    <p className="text-slate-300 text-[11px] leading-relaxed">
+                      Mã Seed giúp tái tạo thứ tự xáo trộn của đề thi. Khi sử dụng cùng mã Seed, cùng đề gốc, cùng thiết lập và cùng phiên bản thuật toán, hệ thống có thể tạo lại kết quả xáo trộn tương ứng. Nếu để trống hoặc thay đổi mã Seed, kết quả có thể khác nhau tùy cách hệ thống xử lý.
+                    </p>
+                    <div className="absolute top-full left-4 -mt-1 border-4 border-transparent border-t-slate-900" />
+                  </div>
+                )}
               </div>
-              <button
-                type="button"
-                onClick={() => setSeed(Math.floor(Math.random() * 100000))}
-                className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold text-xs"
-              >
-                <RotateCw className="w-3.5 h-3.5" />
-                <span>Đổi seed</span>
-              </button>
+
+              {/* Dòng mô tả ngắn gọn bên dưới tiêu đề */}
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Giúp tạo lại cùng một cách xáo trộn khi sử dụng cùng mã Seed và giữ nguyên các thiết lập, dữ liệu đầu vào.
+              </p>
+
+              {/* Ô nhập seed và nút tạo ngẫu nhiên */}
+              <div className="flex items-center gap-2 pt-0.5">
+                <div className="relative flex-1">
+                  <input
+                    type="number"
+                    value={seed}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      setSeed(isNaN(val) ? 0 : val);
+                    }}
+                    placeholder="Nhập mã seed số..."
+                    className="w-full text-xs font-mono font-semibold px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden bg-white text-slate-800"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSeed(Math.floor(Math.random() * 900000) + 100000)}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs border border-slate-200/80 transition-colors shrink-0"
+                  title="Tạo mã seed ngẫu nhiên mới"
+                >
+                  <RotateCw className="w-3.5 h-3.5 text-slate-600" />
+                  <span>Đổi seed</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
