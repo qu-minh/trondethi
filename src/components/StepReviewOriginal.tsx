@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
   AlertTriangle, Lock, Unlock, Shuffle, ChevronDown, ChevronUp, 
-  Edit3, Trash2, Plus, ArrowRight, ShieldAlert, Filter
+  Edit3, Trash2, Plus, ArrowRight, ShieldAlert, Filter, ListChecks, 
+  AlertCircle, CheckCircle2
 } from 'lucide-react';
 import type { OriginalExam, Question } from '../types/exam';
 
@@ -10,6 +11,8 @@ interface StepReviewOriginalProps {
   onUpdateExam: (updated: OriginalExam) => void;
   onProceedToConfig: () => void;
 }
+
+export type FilterMode = 'all' | 'warnings' | 'missing_key' | 'locked';
 
 export const StepReviewOriginal: React.FC<StepReviewOriginalProps> = ({
   originalExam,
@@ -25,7 +28,7 @@ export const StepReviewOriginal: React.FC<StepReviewOriginalProps> = ({
     return map;
   });
 
-  const [filterMode, setFilterMode] = useState<'all' | 'warnings' | 'locked'>('all');
+  const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
   const [hasConfirmedBypassWarnings, setHasConfirmedBypassWarnings] = useState(false);
 
@@ -33,7 +36,6 @@ export const StepReviewOriginal: React.FC<StepReviewOriginalProps> = ({
 
   // Statistics
   const totalQuestions = questions.length;
-  const questionsWithWarnings = questions.filter((q) => q.warnings.length > 0);
   const questionsMissingKey = questions.filter((q) => q.correctKeys.length === 0);
   const questionsWithReference = questions.filter((q) => q.warnings.some((w) => w.type === 'reference'));
   const lockedPositionCount = questions.filter((q) => q.lockQuestionPosition).length;
@@ -155,7 +157,8 @@ export const StepReviewOriginal: React.FC<StepReviewOriginalProps> = ({
 
   // Filtered list
   const filteredQuestions = questions.filter((q) => {
-    if (filterMode === 'warnings') return q.warnings.length > 0;
+    if (filterMode === 'warnings') return q.warnings.some((w) => w.type === 'reference') || q.warnings.length > 0;
+    if (filterMode === 'missing_key') return q.correctKeys.length === 0;
     if (filterMode === 'locked') return q.lockQuestionPosition || q.lockOptionsShuffle;
     return true;
   });
@@ -167,11 +170,11 @@ export const StepReviewOriginal: React.FC<StepReviewOriginalProps> = ({
   return (
     <div className="max-w-5xl mx-auto py-6 space-y-6">
       {/* Title & Stats Header */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
                 Đề gốc đã nhận diện
               </span>
               <span className="text-xs text-slate-400">File: {originalExam.fileName}</span>
@@ -200,24 +203,107 @@ export const StepReviewOriginal: React.FC<StepReviewOriginalProps> = ({
           </div>
         </div>
 
-        {/* Badges / Metrics Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
-            <div className="text-xs text-slate-500 font-medium">Tổng số câu hỏi</div>
-            <div className="text-xl font-bold text-slate-900 mt-0.5">{totalQuestions} câu</div>
+        {/* 4 Thẻ Thống Kê (Stat Cards) Tối giản, Hiện đại & Tương tác */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {/* Thẻ 1 — Tổng số câu hỏi */}
+          <div
+            onClick={() => setFilterMode('all')}
+            className={`p-4 rounded-xl border text-left cursor-pointer transition-all ${
+              filterMode === 'all'
+                ? 'bg-blue-50/70 border-blue-300 ring-2 ring-blue-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/50 shadow-2xs'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-xs font-medium text-slate-500">Tổng số câu hỏi</span>
+              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/70">
+                <ListChecks className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-2xl font-bold text-slate-900 tracking-tight">
+              {totalQuestions} <span className="text-sm font-normal text-slate-500">câu</span>
+            </div>
+            <div className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+              <span>Đã nhận diện</span>
+            </div>
           </div>
-          <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200/60">
-            <div className="text-xs text-amber-700 font-medium">Cảnh báo tham chiếu</div>
-            <div className="text-xl font-bold text-amber-800 mt-0.5">{questionsWithReference.length} câu</div>
+
+          {/* Thẻ 2 — Cảnh báo tham chiếu */}
+          <div
+            onClick={() => setFilterMode('warnings')}
+            className={`p-4 rounded-xl border text-left cursor-pointer transition-all ${
+              filterMode === 'warnings'
+                ? 'bg-amber-50/80 border-amber-300 ring-2 ring-amber-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 hover:border-amber-200 hover:bg-amber-50/20 shadow-2xs'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-xs font-medium text-slate-500">Cảnh báo tham chiếu</span>
+              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100/70">
+                <AlertTriangle className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-2xl font-bold text-amber-900 tracking-tight">
+              {questionsWithReference.length} <span className="text-sm font-normal text-slate-500">câu</span>
+            </div>
+            <div className="text-xs text-amber-700 mt-1 flex items-center gap-1.5">
+              <span className={`w-1.5 h-1.5 rounded-full ${questionsWithReference.length > 0 ? 'bg-amber-500' : 'bg-slate-300'}`}></span>
+              <span>{questionsWithReference.length > 0 ? 'Cần kiểm tra' : 'Không có'}</span>
+            </div>
           </div>
-          <div className="p-3 bg-red-50/70 rounded-xl border border-red-200/60">
-            <div className="text-xs text-red-700 font-medium">Chưa có đáp án</div>
-            <div className="text-xl font-bold text-red-800 mt-0.5">{questionsMissingKey.length} câu</div>
+
+          {/* Thẻ 3 — Chưa có đáp án */}
+          <div
+            onClick={() => setFilterMode('missing_key')}
+            className={`p-4 rounded-xl border text-left cursor-pointer transition-all ${
+              filterMode === 'missing_key'
+                ? questionsMissingKey.length > 0
+                  ? 'bg-red-50/80 border-red-300 ring-2 ring-red-500/20 shadow-xs'
+                  : 'bg-emerald-50/80 border-emerald-300 ring-2 ring-emerald-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/50 shadow-2xs'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-xs font-medium text-slate-500">Chưa có đáp án</span>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${
+                questionsMissingKey.length > 0
+                  ? 'bg-red-50 text-red-600 border-red-100/70'
+                  : 'bg-emerald-50 text-emerald-600 border-emerald-100/70'
+              }`}>
+                {questionsMissingKey.length > 0 ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+              </div>
+            </div>
+            <div className={`text-2xl font-bold tracking-tight ${questionsMissingKey.length > 0 ? 'text-red-700' : 'text-slate-900'}`}>
+              {questionsMissingKey.length} <span className="text-sm font-normal text-slate-500">câu</span>
+            </div>
+            <div className={`text-xs mt-1 flex items-center gap-1.5 ${questionsMissingKey.length > 0 ? 'text-red-700 font-medium' : 'text-emerald-700'}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${questionsMissingKey.length > 0 ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`}></span>
+              <span>{questionsMissingKey.length === 0 ? 'Tất cả câu đã có đáp án' : 'Cần bổ sung đáp án'}</span>
+            </div>
           </div>
-          <div className="p-3 bg-indigo-50/70 rounded-xl border border-indigo-200/60">
-            <div className="text-xs text-indigo-700 font-medium">Đã đặt khóa cố định</div>
-            <div className="text-xl font-bold text-indigo-800 mt-0.5">
-              {lockedPositionCount} vị trí / {lockedOptionsCount} đáp án
+
+          {/* Thẻ 4 — Khóa cố định */}
+          <div
+            onClick={() => setFilterMode('locked')}
+            className={`p-4 rounded-xl border text-left cursor-pointer transition-all ${
+              filterMode === 'locked'
+                ? 'bg-indigo-50/80 border-indigo-300 ring-2 ring-indigo-500/20 shadow-xs'
+                : 'bg-white border-slate-200/80 hover:border-indigo-200 hover:bg-indigo-50/20 shadow-2xs'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-xs font-medium text-slate-500">Khóa cố định</span>
+              <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100/70">
+                <Lock className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-2xl font-bold text-indigo-950 tracking-tight">
+              {lockedPositionCount} <span className="text-sm font-normal text-slate-500">vị trí</span>
+            </div>
+            <div className="text-xs text-indigo-700 mt-1 flex items-center gap-1.5">
+              <span className={`w-1.5 h-1.5 rounded-full ${(lockedPositionCount > 0 || lockedOptionsCount > 0) ? 'bg-indigo-500' : 'bg-slate-300'}`}></span>
+              <span>{lockedOptionsCount} đáp án đã khóa</span>
             </div>
           </div>
         </div>
@@ -266,9 +352,9 @@ export const StepReviewOriginal: React.FC<StepReviewOriginalProps> = ({
 
       {/* Filters and Expand/Collapse Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 text-xs">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-slate-500 font-medium flex items-center gap-1">
-            <Filter className="w-3.5 h-3.5" /> Lọc câu:
+            <Filter className="w-3.5 h-3.5" /> Đang lọc:
           </span>
           <button
             onClick={() => setFilterMode('all')}
@@ -284,7 +370,15 @@ export const StepReviewOriginal: React.FC<StepReviewOriginalProps> = ({
               filterMode === 'warnings' ? 'bg-amber-100 text-amber-800 font-semibold' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            Có cảnh báo ({questionsWithWarnings.length})
+            Có cảnh báo ({questionsWithReference.length})
+          </button>
+          <button
+            onClick={() => setFilterMode('missing_key')}
+            className={`px-3 py-1 rounded-lg font-medium transition-colors ${
+              filterMode === 'missing_key' ? 'bg-red-100 text-red-800 font-semibold' : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            Chưa có đáp án ({questionsMissingKey.length})
           </button>
           <button
             onClick={() => setFilterMode('locked')}
