@@ -315,9 +315,9 @@ export const StepConfig: React.FC<StepConfigProps> = ({
                 <span className="font-bold text-amber-400">{lockedOptionsCount} câu</span>
               </div>
               <div className="flex justify-between py-1 text-slate-300">
-                <span className="text-slate-400">Độ toàn vẹn đáp án:</span>
+                <span className="text-slate-400">Kiểm tra đáp án:</span>
                 <span className="font-bold text-emerald-400 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> 100% Khớp đúng
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Tự động đối chiếu
                 </span>
               </div>
             </div>

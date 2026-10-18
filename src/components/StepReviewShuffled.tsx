@@ -48,9 +48,9 @@ export const StepReviewShuffled: React.FC<StepReviewShuffledProps> = ({
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                Đã trộn thành công & Kiểm tra toàn vẹn đáp án 100%
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                Đã hoàn tất trộn đề & tự động đối chiếu đáp án
               </span>
               <span className="text-xs text-slate-400">Đã tạo {shuffledExams.length} mã đề</span>
             </div>

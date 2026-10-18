@@ -215,7 +215,7 @@ export const App: React.FC = () => {
       <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>Hệ thống Trộn đề thi Trắc nghiệm Online dành cho Giáo viên</span>
-          <span className="text-slate-400">Bảo toàn cấu trúc & Chống sai lệch đáp án tuyệt đối</span>
+          <span className="text-slate-400">Hỗ trợ kiểm tra đề & đối chiếu đáp án trước khi tải xuống</span>
         </div>
       </footer>
     </div>

@@ -33,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({ currentStep, onNavigateStep, can
                 Dành cho giáo viên
               </span>
             </div>
-            <p className="text-xs text-slate-500">Bảo toàn 100% độ chính xác câu hỏi & đáp án</p>
+            <p className="text-xs text-slate-500">Kiểm tra đề thi & đối chiếu đáp án trực quan</p>
           </div>
         </div>
 

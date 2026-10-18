@@ -122,7 +122,7 @@ export const StepConfirmedDownload: React.FC<StepConfirmedDownloadProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                Toàn bộ dữ liệu đề thi đã được cố định. Thuật toán kiểm tra toàn vẹn đáp án 100% không bị sai lệch.
+                Dữ liệu đề thi đã được xác nhận và khóa phiên bản. Hệ thống đã hoàn tất đối chiếu đáp án cho các mã đề.
               </p>
             </div>
           </div>
@@ -150,10 +150,10 @@ export const StepConfirmedDownload: React.FC<StepConfirmedDownloadProps> = ({
             <div className="text-[11px] text-slate-500 font-medium">Câu giữ nguyên vị trí</div>
             <div className="text-lg font-bold text-purple-700 mt-0.5">{summary.lockedQuestionsCount} câu</div>
           </div>
-          <div className="p-3 bg-emerald-50/70 rounded-xl border border-emerald-200/60">
-            <div className="text-[11px] text-emerald-800 font-medium">Kiểm tra tính toàn vẹn</div>
-            <div className="text-lg font-bold text-emerald-700 mt-0.5 flex items-center gap-1">
-              <CheckCircle2 className="w-4 h-4" /> 100% Khớp đúng
+          <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-200/60">
+            <div className="text-[11px] text-blue-800 font-medium">Trạng thái đối chiếu</div>
+            <div className="text-lg font-bold text-blue-700 mt-0.5 flex items-center gap-1">
+              <CheckCircle2 className="w-4 h-4" /> Đã kiểm tra đối chiếu
             </div>
           </div>
         </div>
