@@ -76,32 +76,6 @@ Câu 1. Thủ đô của Việt Nam là gì?
 - Đã cài đặt **Node.js** (phiên bản 18+ trở lên, khuyến nghị Node.js v20 hoặc v22).
 - Trình duyệt web hiện đại: Chrome, Edge, Cốc Cốc, Firefox.
 
-### Các bước thực hiện:
-
-1. **Mở terminal PowerShell tại thư mục dự án**:
-   ```powershell
-   cd d:\works\projects\trondeonline
-   ```
-
-2. **Cài đặt các gói phụ thuộc (nếu chưa cài)**:
-   ```powershell
-   npm install
-   ```
-
-3. **Khởi chạy máy chủ phát triển (Development Server)**:
-   ```powershell
-   npm run dev
-   ```
-   Sau đó mở trình duyệt truy cập: `http://localhost:5173/`
-
-4. **Đóng gói dự án để triển khai (Production Build)**:
-   ```powershell
-   npm run build
-   ```
-   Thư mục `dist/` tạo ra có thể triển khai lên Vercel, Netlify, Cloudflare Pages hoặc máy chủ nội bộ trường học.
-
----
-
 ## 🛠️ Công Nghệ Sử Dụng
 
 - **Frontend Core**: React 19, TypeScript
